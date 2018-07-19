@@ -21,7 +21,16 @@ window.onload = () => {
       loggeadIn.style.display = 'none';
     }
   })
+
   firebase.database().ref('mensaje')
+  .limitToLast(1)
+  .once('value')
+  .then((mensaje)=> {
+      console.log('Mensajes + ' + JSON.stringify(mensaje))
+  })
+
+  firebase.database().ref('mensaje')
+  .limitToLast(1)
   .on('child_added', newMensaje => {
     mensajeContainer.innerHTML += `
     <p>Nombre: ${newMensaje.val().creatorName}</p>
