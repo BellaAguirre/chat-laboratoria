@@ -21,6 +21,12 @@ window.onload = () => {
       loggeadIn.style.display = 'none';
     }
   })
+  firebase.database().ref('mensaje')
+  .on('child_added', newMensaje => {
+    mensajeContainer.innerHTML += `
+    <p>Nombre: ${newMensaje.val().creatorName}</p>
+    <p>${newMensaje.val().text}</p>`
+  })
 }
 
 const register = () => {
@@ -83,10 +89,28 @@ const logginFacebook = () => {
   });
 
 }
+const sendMensage = () => {
+  const currentUser = firebase.auth().currentUser;
+  const mensajeText = mensajeArea.value;
+
+  const newMensajeKey = firebase.database().ref().child('mensaje').push().key;
+
+  firebase.database().ref(`mensaje/${newMensajeKey}`).set({
+    creator : currentUser.uid,
+    creatorName : currentUser.displayName,
+    text : mensajeText,
+  })
+}
+
+const btnSend = document.querySelector('#sendBtn');
+
 const btnLogin = document.getElementById('btnloggin');
 const btnRegister = document.getElementById('btnregister');
 const btnLoggout = document.getElementById('btnloggout');
+const btnFacebook = document.getElementById('loginFacebook');
 
+btnSend.addEventListener('click',sendMensage)
+btnFacebook.addEventListener('click',logginFacebook);
 btnLogin.addEventListener('click', () => {
   login();
 })
